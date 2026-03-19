@@ -17,19 +17,24 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24 # 升级到 GitHub 推荐的 Node 24
+          node-version: 24
           cache: 'npm'
 
       - name: Force Clean and Install
         run: |
-          # 彻底删除可能从 ZIP 带入的干扰文件
           rm -rf node_modules
           rm -f package-lock.json
-          # 重新安装，并确保包含 Linux 环境需要的原生组件
           npm install --include=optional
           
       - name: Build Web App
         run: npm run build
+
+      - name: Prepare Web Assets
+        # 核心修复：如果 Capacitor 找不到 www，我们就把 dist 复制一份给它
+        run: |
+          if [ -d "dist" ]; then
+            cp -r dist www
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
