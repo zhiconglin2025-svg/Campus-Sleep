@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ] # 兼容 main 和 master 分支
+    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 
@@ -17,12 +17,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22 # 使用更稳定的 Node 22
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
-
+      - name: Clean and Install dependencies
+        run: |
+          rm -f package-lock.json # 删除可能存在的旧锁定文件
+          npm install --include=optional # 重新生成适合 Linux 环境的依赖
+          
       - name: Build Web App
         run: npm run build
 
@@ -36,7 +38,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Add Android Platform
-        run: npx cap add android
+        run: npx cap add android || true # 如果已存在则跳过
 
       - name: Sync Capacitor
         run: npx cap sync
