@@ -30,11 +30,10 @@ jobs:
         run: npm run build
 
       - name: Prepare Web Assets
+        # 修复：只把编译好的 dist 复制到 www，确保 Capacitor 绝对能找到
         run: |
-          # 确保 dist 文件夹存在，并复制到 www 以防万一
           mkdir -p www
           cp -r dist/* www/
-          cp -r dist/* dist/ # 确保 dist 内部结构正确
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -45,19 +44,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Initialize and Add Android Platform
-        # 核心修复：强制添加 Android 平台，并查看输出日志
+      - name: Add Android Platform and Sync
+        # 强制添加并同步
         run: |
           npx cap add android
           npx cap sync android
 
       - name: Build Android APK
         run: |
-          # 检查 android 文件夹是否存在，如果不存在则报错
-          if [ ! -d "android" ]; then
-            echo "错误：android 文件夹未创建成功！"
-            exit 1
-          fi
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
