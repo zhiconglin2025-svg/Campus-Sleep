@@ -1,0 +1,5 @@
+{
+  "name": "校园睡 (Campus Sleep)",
+  "description": "通过截图智能分析睡眠时长，助力大学生养成良好作息习惯的校园睡眠打卡工具。",
+  "requestFramePermissions": []
+}
